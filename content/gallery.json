@@ -1,0 +1,10 @@
+{
+  "images": [
+    { "image": "https://images.unsplash.com/photo-1565953554309-89c79f3f3582?auto=format&fit=crop&w=700&q=70", "caption": "Sejlskib på vandet" },
+    { "image": "https://images.unsplash.com/photo-1494412651409-8963ce7935a7?auto=format&fit=crop&w=700&q=70", "caption": "Havnefront med skibe" },
+    { "image": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=700&q=70", "caption": "Gamle reb og fortøjning" },
+    { "image": "https://images.unsplash.com/photo-1530038478420-5439e3c69b2c?auto=format&fit=crop&w=700&q=70", "caption": "Kompas på bord" },
+    { "image": "https://images.unsplash.com/photo-1572252009286-268acec5ca0a?auto=format&fit=crop&w=700&q=70", "caption": "Anker ved havnen" },
+    { "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=700&q=70", "caption": "Museumsudstilling med genstande" }
+  ]
+}

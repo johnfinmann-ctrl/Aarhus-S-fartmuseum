@@ -1,0 +1,114 @@
+backend:
+  name: github
+  repo: JOHN_GITHUB_BRUGERNAVN/REPO_NAVN
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+locale: "da"
+
+collections:
+
+  # 1. Indstillinger (forsidetekst, om museet, åbningstider, kontakt, bog, støt museet)
+  - name: "settings"
+    label: "Indstillinger"
+    files:
+      - file: "content/settings.json"
+        label: "Generelle indstillinger"
+        name: "settings"
+        fields:
+          - { label: "Forside – Overskrift", name: "hero_title", widget: "string", default: "Aarhus Søfartsmuseum" }
+          - { label: "Forside – Undertitel", name: "hero_subtitle", widget: "string", default: "Vi bevarer Aarhus' maritime historie" }
+          - { label: "Forside – Kort introduktion", name: "hero_intro", widget: "text" }
+          - { label: "Om museet – Tekst", name: "about_text", widget: "markdown" }
+          - { label: "Om museet – Billede", name: "about_image", widget: "image", required: false }
+          - { label: "Åbningstider", name: "opening_hours", widget: "text" }
+          - { label: "Adresse", name: "address", widget: "string" }
+          - { label: "Telefon", name: "phone", widget: "string" }
+          - { label: "E-mail", name: "email", widget: "string" }
+          - { label: "Kontaktperson", name: "contact_person", widget: "string", required: false }
+          - { label: "Google Maps – Embed/Link", name: "maps_url", widget: "string" }
+          - { label: "Facebook", name: "facebook_url", widget: "string", required: false }
+          - { label: "Instagram", name: "instagram_url", widget: "string", required: false }
+          - label: "Bogen"
+            name: "book"
+            widget: "object"
+            fields:
+              - { label: "Titel", name: "title", widget: "string", default: "Man skulle have fanden til oldemor" }
+              - { label: "Forsidebillede", name: "cover_image", widget: "image", required: false }
+              - { label: "Beskrivelse", name: "description", widget: "text" }
+          - label: "Støt museet"
+            name: "support"
+            widget: "object"
+            fields:
+              - { label: "Donation – tekst", name: "donation_text", widget: "text" }
+              - { label: "Sponsor – tekst", name: "sponsor_text", widget: "text" }
+              - { label: "Frivillig – tekst", name: "volunteer_text", widget: "text" }
+
+  # 2. Sider (om museet, samlingen-intro, fremtid, projekter mv. som frie tekstsider)
+  - name: "pages"
+    label: "Sider"
+    folder: "content/pages"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Sektion-id (anker)", name: "section_id", widget: "string", required: false }
+      - { label: "Indhold", name: "body", widget: "markdown" }
+      - { label: "Billede", name: "image", widget: "image", required: false }
+
+  # 3. Arrangementer
+  - name: "events"
+    label: "Arrangementer"
+    folder: "content/events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Dato", name: "date", widget: "datetime" }
+      - { label: "Type", name: "type", widget: "select", options: ["Foredrag", "Rundvisning", "Udstilling", "Maritim dag", "Særarrangement", "Workshop"] }
+      - { label: "Billede", name: "image", widget: "image", required: false }
+      - { label: "Kort beskrivelse", name: "summary", widget: "text" }
+      - { label: "Beskrivelse", name: "body", widget: "markdown", required: false }
+      - { label: "Vis på forsiden", name: "featured", widget: "boolean", default: false }
+
+  # 4. Nyheder
+  - name: "news"
+    label: "Nyheder"
+    folder: "content/news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Dato", name: "date", widget: "datetime" }
+      - { label: "Billede", name: "image", widget: "image", required: false }
+      - { label: "Kort tekst", name: "summary", widget: "text" }
+      - { label: "Indhold", name: "body", widget: "markdown", required: false }
+
+  # 5. Samlingen
+  - name: "collection_items"
+    label: "Samlingen"
+    folder: "content/collection"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Kategori", name: "category", widget: "select", options: ["Skibsmodel", "Fotografi", "Dokument", "Navigationsudstyr", "Genstand", "Andet"] }
+      - { label: "Billede", name: "image", widget: "image" }
+      - { label: "Beskrivelse", name: "description", widget: "text" }
+
+  # 6. Billedgalleri
+  - name: "gallery"
+    label: "Galleri"
+    files:
+      - file: "content/gallery.json"
+        label: "Billedgalleri – Aarhus Havn gennem tiden"
+        name: "gallery"
+        fields:
+          - label: "Billeder"
+            name: "images"
+            widget: "list"
+            fields:
+              - { label: "Billede", name: "image", widget: "image" }
+              - { label: "Alt-tekst / Billedtekst", name: "caption", widget: "string" }

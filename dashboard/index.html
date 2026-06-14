@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Bestyrelsesportal – Aarhus Søfartsmuseum</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#0b2438;
+    --navy-dark:#071826;
+    --sand:#e8dcc4;
+    --sand-light:#f6f1e6;
+    --white:#ffffff;
+    --red:#a13d3d;
+    --text:#1c2b36;
+    --green:#3f6b4f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Trebuchet MS','Segoe UI',sans-serif;
+    background:var(--sand-light);
+    color:var(--text);
+    line-height:1.5;
+  }
+  header{
+    background:var(--navy);color:var(--white);
+    padding:18px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:10px;
+  }
+  header .title{display:flex;align-items:center;gap:10px;font-weight:bold;font-size:1.2rem;color:var(--sand);}
+  header .meta{font-size:.85rem;color:var(--sand-light);opacity:.8;}
+  .year-select{
+    background:var(--navy-dark);color:var(--white);
+    border:1px solid var(--sand);border-radius:2px;
+    padding:6px 10px;font-family:inherit;
+  }
+
+  nav.tabs{
+    display:flex;flex-wrap:nowrap;gap:4px;
+    background:var(--navy-dark);padding:0 10px;
+    position:sticky;top:0;z-index:100;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  nav.tabs button{
+    background:none;border:none;color:var(--sand-light);
+    padding:14px 16px;font-family:inherit;font-size:.9rem;
+    cursor:pointer;border-bottom:3px solid transparent;
+    transition:.2s;white-space:nowrap;flex-shrink:0;
+  }
+  nav.tabs button:hover{color:var(--white);}
+  nav.tabs button.active{
+    color:var(--white);border-bottom-color:var(--red);font-weight:bold;
+  }
+
+  main{max-width:1100px;margin:0 auto;padding:24px 16px 60px;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  h2{color:var(--navy);margin-bottom:6px;font-size:1.4rem;}
+  h3{color:var(--navy);font-size:1.05rem;margin-bottom:10px;}
+  .subtitle{color:#666;font-size:.9rem;margin-bottom:20px;}
+
+  .card-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px;margin-bottom:24px;
+  }
+  .stat-card{
+    background:var(--white);border:1px solid #e2d8c2;border-radius:4px;
+    padding:18px;border-top:3px solid var(--navy);
+  }
+  .stat-card .label{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;}
+  .stat-card .value{font-size:1.8rem;font-weight:bold;color:var(--navy);}
+  .stat-card .delta{font-size:.8rem;margin-top:4px;}
+  .delta.up{color:var(--green);}
+  .delta.down{color:var(--red);}
+
+  .panel-box{
+    background:var(--white);border:1px solid #e2d8c2;border-radius:4px;
+    padding:20px;margin-bottom:20px;
+  }
+  .chart-wrap{position:relative;height:280px;margin-top:10px;}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:10px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #eee;}
+  th{color:var(--navy);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;background:var(--sand-light);}
+  tr:hover{background:#faf7f0;}
+  td input, td select{width:100%;border:1px solid #ddd;border-radius:2px;padding:6px;font-family:inherit;font-size:.85rem;}
+
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:10px;}
+  .form-grid label{font-size:.8rem;color:#555;display:block;margin-bottom:4px;}
+  .form-grid input, .form-grid select{
+    width:100%;padding:8px;border:1px solid #ddd;border-radius:2px;font-family:inherit;font-size:.9rem;
+  }
+
+  .btn{
+    display:inline-block;background:var(--red);color:var(--white);
+    border:none;padding:9px 18px;border-radius:2px;font-family:inherit;
+    font-size:.9rem;cursor:pointer;font-weight:bold;
+  }
+  .btn:hover{background:#8c3232;}
+  .btn-outline{background:transparent;border:1px solid var(--navy);color:var(--navy);}
+  .btn-outline:hover{background:var(--sand-light);}
+  .btn-small{padding:5px 10px;font-size:.8rem;}
+  .btn-danger{background:var(--white);color:var(--red);border:1px solid var(--red);}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;}
+  .pill{
+    display:inline-block;background:var(--sand-light);border:1px solid var(--sand);
+    border-radius:20px;padding:3px 10px;font-size:.75rem;color:var(--navy);
+  }
+  .note{font-size:.8rem;color:#888;margin-top:6px;}
+  .expiry-warning{color:var(--red);font-weight:bold;}
+
+  .info-box{
+    background:var(--sand-light);border:1px solid var(--sand);
+    border-left:4px solid var(--navy);
+    border-radius:4px;padding:14px 16px;
+    font-size:.9rem;color:var(--text);
+    margin-bottom:20px;
+  }
+
+  .table-scroll{
+    width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  }
+  .table-scroll table{min-width:640px;}
+
+  /* Status traffic-light cards */
+  .stat-card.status-ok{border-top-color:var(--green);}
+  .stat-card.status-warn{border-top-color:#c9a227;}
+  .stat-card.status-alert{border-top-color:var(--red);}
+  .status-dot{
+    display:inline-block;width:12px;height:12px;border-radius:50%;
+    margin-right:6px;vertical-align:middle;
+  }
+  .status-dot.ok{background:var(--green);}
+  .status-dot.warn{background:#c9a227;}
+  .status-dot.alert{background:var(--red);}
+  .status-msg{font-size:.8rem;margin-top:6px;}
+  .status-msg.warn{color:#9c7a1a;}
+  .status-msg.alert{color:var(--red);}
+  .status-msg.ok{color:var(--green);}
+
+  /* Responsive: mobile 1 col, iPad 2 cols, PC 3-4 cols */
+  .card-grid{ grid-template-columns: 1fr; }
+  @media(min-width:600px){
+    .card-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media(min-width:980px){
+    .card-grid{ grid-template-columns: repeat(4, 1fr); }
+  }
+  @media(min-width:600px) and (max-width:979px){
+    .card-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Larger touch targets */
+  .btn{ min-height:44px; }
+  nav.tabs button{ min-height:48px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title">⚓ Bestyrelsesportal – Aarhus Søfartsmuseum</div>
+  <div class="meta">
+    År: <select id="yearSelect" class="year-select"></select>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="status" class="active">Status i dag</button>
+  <button data-tab="besog">Besøgsstatistik</button>
+  <button data-tab="arrangementer">Arrangementer</button>
+  <button data-tab="frivillige">Frivillige</button>
+  <button data-tab="sponsorer">Sponsorer</button>
+  <button data-tab="historik">Historik</button>
+  <button data-tab="fonde">Fondsdokumentation</button>
+  <button data-tab="dokumenter">Dokumentarkiv</button>
+</nav>
+
+<main>
+
+  <!-- ============ STATUS I DAG ============ -->
+  <section class="tab-panel active" id="tab-status">
+    <h2>Status i dag</h2>
+    <p class="subtitle">Et hurtigt overblik – så bestyrelsen på 10 sekunder kan se, hvad der kører fint, og hvad der kræver opmærksomhed.</p>
+
+    <div class="info-box">
+      <strong>Demo-version:</strong> Data gemmes lokalt i denne browser. I den endelige overdragelsesversion kan data kobles til Decap CMS/GitHub, så flere bestyrelsesmedlemmer arbejder med samme data.
+    </div>
+
+    <div class="card-grid" id="statusCards"></div>
+
+    <div class="panel-box">
+      <h3>Kommende arrangementer</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Dato</th><th>Titel</th><th>Type</th><th>Deltagere (forventet/faktisk)</th></tr></thead>
+        <tbody id="upcomingEventsTable"></tbody>
+      </table>
+      </div>
+      <p class="note">Tilføj og rediger arrangementer under fanen "Arrangementer".</p>
+    </div>
+  </section>
+
+  <!-- ============ BESØGSSTATISTIK ============ -->
+  <section class="tab-panel" id="tab-besog">
+    <h2>Besøgsstatistik</h2>
+    <p class="subtitle">Registrer besøgende, sidevisninger og enhedstype måned for måned. (Indtastes manuelt eller importeres fra analyseværktøj.)</p>
+
+    <div class="card-grid" id="visitCards"></div>
+
+    <div class="panel-box">
+      <h3>Besøgende og sidevisninger</h3>
+      <div class="chart-wrap"><canvas id="visitorsChart"></canvas></div>
+    </div>
+
+    <div class="panel-box">
+      <h3>Enhedsfordeling (seneste måned)</h3>
+      <div class="chart-wrap" style="max-width:320px;margin:0 auto;"><canvas id="deviceChart"></canvas></div>
+    </div>
+
+    <div class="panel-box">
+      <div class="toolbar">
+        <h3 style="margin:0;">Månedsdata</h3>
+        <button class="btn" onclick="addVisitRow()">+ Tilføj måned</button>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Måned</th><th>Besøgende</th><th>Sidevisninger</th>
+          <th>Mobil %</th><th>iPad %</th><th>PC %</th>
+          <th>Mest besøgte side</th><th></th>
+        </tr></thead>
+        <tbody id="visitTable"></tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ARRANGEMENTER ============ -->
+  <section class="tab-panel" id="tab-arrangementer">
+    <h2>Arrangementer</h2>
+    <p class="subtitle">Foredrag, udstillinger, rundvisninger og maritime arrangementer – med deltagertal og udvikling.</p>
+
+    <div class="card-grid" id="eventCards"></div>
+
+    <div class="panel-box">
+      <h3>Deltagere pr. arrangementstype</h3>
+      <div class="chart-wrap"><canvas id="eventTypeChart"></canvas></div>
+    </div>
+
+    <div class="panel-box">
+      <div class="toolbar">
+        <h3 style="margin:0;">Arrangementer i {{YEAR}}</h3>
+        <button class="btn" onclick="addEventRow()">+ Tilføj arrangement</button>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Dato</th><th>Titel</th><th>Type</th><th>Deltagere</th><th></th>
+        </tr></thead>
+        <tbody id="eventTable"></tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FRIVILLIGE ============ -->
+  <section class="tab-panel" id="tab-frivillige">
+    <h2>Frivillige</h2>
+    <p class="subtitle">Registrering af aktive frivillige, timer, gennemførte aktiviteter og nye frivillige.</p>
+
+    <div class="card-grid" id="volunteerCards"></div>
+
+    <div class="panel-box">
+      <h3>Frivillige timer pr. måned</h3>
+      <div class="chart-wrap"><canvas id="volunteerHoursChart"></canvas></div>
+    </div>
+
+    <div class="panel-box">
+      <div class="toolbar">
+        <h3 style="margin:0;">Månedsdata – frivillige</h3>
+        <button class="btn" onclick="addVolunteerRow()">+ Tilføj måned</button>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Måned</th><th>Aktive frivillige</th><th>Frivillige timer</th>
+          <th>Gennemførte aktiviteter</th><th>Nye frivillige</th><th></th>
+        </tr></thead>
+        <tbody id="volunteerTable"></tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SPONSORER ============ -->
+  <section class="tab-panel" id="tab-sponsorer">
+    <h2>Sponsorer og samarbejdspartnere</h2>
+    <p class="subtitle">Oversigt over sponsorer, samarbejdspartnere, kontaktpersoner og sponsorperioder. Udløb inden for 60 dage markeres.</p>
+
+    <div class="card-grid" id="sponsorCards"></div>
+
+    <div class="panel-box">
+      <div class="toolbar">
+        <h3 style="margin:0;">Sponsorer &amp; partnere</h3>
+        <button class="btn" onclick="addSponsorRow()">+ Tilføj sponsor</button>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Navn</th><th>Type</th><th>Kontaktperson</th>
+          <th>Start</th><th>Udløb</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="sponsorTable"></tbody>
+      </table>
+      </div>
+      <p class="note">Status "Udløber snart" vises automatisk, hvis udløbsdatoen er inden for 60 dage.</p>
+    </div>
+  </section>
+
+  <!-- ============ HISTORIK ============ -->
+  <section class="tab-panel" id="tab-historik">
+    <h2>Historik – år for år</h2>
+    <p class="subtitle">Sammenligning af museets udvikling over flere år: besøgende, arrangementer, frivillige og sponsorer.</p>
+
+    <div class="panel-box">
+      <h3>Udvikling over tid</h3>
+      <div class="chart-wrap"><canvas id="historyChart"></canvas></div>
+    </div>
+
+    <div class="panel-box">
+      <h3>Årsoversigt</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>År</th><th>Besøgende (total)</th><th>Arrangementer</th>
+          <th>Deltagere (total)</th><th>Frivillige timer</th><th>Aktive sponsorer</th>
+        </tr></thead>
+        <tbody id="historyTable"></tbody>
+      </table>
+      </div>
+      <p class="note">Tabellen opdateres automatisk baseret på data for hvert år. Vælg år i toppen for at indtaste/redigere data for et givet år.</p>
+    </div>
+  </section>
+
+  <!-- ============ FONDSDOKUMENTATION ============ -->
+  <section class="tab-panel" id="tab-fonde">
+    <h2>Fondsdokumentation</h2>
+    <p class="subtitle">Et samlet resumé til brug for fondsansøgninger og årsberetninger – baseret på data for det valgte år.</p>
+
+    <div class="panel-box" id="fundSummary"></div>
+
+    <div class="panel-box">
+      <h3>Eksport</h3>
+      <p>Kopiér nedenstående tekst direkte til en fondsansøgning eller årsberetning.</p>
+      <textarea id="fundText" style="width:100%;min-height:220px;font-family:'Georgia',serif;font-size:.95rem;padding:12px;border:1px solid #ddd;border-radius:2px;"></textarea>
+      <div style="margin-top:10px;">
+        <button class="btn" onclick="copyFundText()">Kopiér tekst</button>
+        <button class="btn btn-outline" onclick="downloadFundText()">Download som .txt</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DOKUMENTARKIV ============ -->
+  <section class="tab-panel" id="tab-dokumenter">
+    <h2>Dokumentarkiv</h2>
+    <p class="subtitle">Referater, vedtægter, fondsansøgninger, sponsorater, årsrapporter og øvrige dokumenter – samlet på ét sted.</p>
+
+    <div class="info-box">
+      <strong>Demo-version:</strong> Data gemmes lokalt i denne browser. I den endelige overdragelsesversion kan data kobles til Decap CMS/GitHub, så flere bestyrelsesmedlemmer arbejder med samme data.
+    </div>
+
+    <div class="panel-box">
+      <div class="toolbar">
+        <h3 style="margin:0;">Dokumenter</h3>
+        <button class="btn" onclick="addDocRow()">+ Tilføj dokument</button>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Titel</th><th>Kategori</th><th>Dato</th>
+          <th>Beskrivelse</th><th>Link</th><th>Ansvarlig</th><th></th>
+        </tr></thead>
+        <tbody id="docTable"></tbody>
+      </table>
+      </div>
+      <p class="note">Indsæt link til dokumentet (f.eks. Google Drive, Dropbox eller en fil i GitHub-repoet).</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* =========================================================
+   DATA LAYER – localStorage
+   Struktur: { years: { "2026": {visits:[], events:[], volunteers:[], sponsors:[]} }, ... }
+   Sponsorer er ikke år-bundne, men gemmes globalt (med start/udløb).
+========================================================= */
+const STORAGE_KEY = 'asm_dashboard_v1';
+
+const MONTHS = ["Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"];
+const EVENT_TYPES = ["Foredrag","Rundvisning","Udstilling","Maritim dag","Særarrangement","Workshop"];
+
+function defaultData(){
+  const currentYear = new Date().getFullYear();
+  return {
+    years: {
+      [currentYear]: {
+        visits: [],
+        events: [],
+        volunteers: []
+      }
+    },
+    sponsors: [],
+    documents: [],
+    news: []
+  };
+}
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    if(!parsed.years) parsed.years = {};
+    if(!parsed.sponsors) parsed.sponsors = [];
+    if(!parsed.documents) parsed.documents = [];
+    if(!parsed.news) parsed.news = [];
+    return parsed;
+  }catch(e){
+    return defaultData();
+  }
+}
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+}
+
+let DATA = loadData();
+
+function ensureYear(year){
+  if(!DATA.years[year]){
+    DATA.years[year] = { visits: [], events: [], volunteers: [] };
+    saveData();
+  }
+  return DATA.years[year];
+}
+
+/* =========================================================
+   YEAR SELECTOR
+========================================================= */
+let CURRENT_YEAR;
+
+function populateYearSelect(){
+  const sel = document.getElementById('yearSelect');
+  const years = new Set(Object.keys(DATA.years).map(Number));
+  const thisYear = new Date().getFullYear();
+  years.add(thisYear);
+  // add a couple of surrounding years for convenience
+  years.add(thisYear - 1);
+  years.add(thisYear + 1);
+
+  const sorted = Array.from(years).sort((a,b)=>a-b);
+  sel.innerHTML = '';
+  sorted.forEach(y=>{
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    sel.appendChild(opt);
+  });
+
+  CURRENT_YEAR = String(thisYear);
+  sel.value = CURRENT_YEAR;
+
+  sel.addEventListener('change', ()=>{
+    CURRENT_YEAR = sel.value;
+    ensureYear(CURRENT_YEAR);
+    renderAll();
+  });
+
+  ensureYear(CURRENT_YEAR);
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  if(e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('tab-' + e.target.dataset.tab).classList.add('active');
+});
+
+/* =========================================================
+   HELPERS
+========================================================= */
+function fmtNum(n){
+  return new Intl.NumberFormat('da-DK').format(n || 0);
+}
+function sumField(arr, field){
+  return arr.reduce((s,r)=> s + (Number(r[field]) || 0), 0);
+}
+function pctDelta(curr, prev){
+  if(!prev) return null;
+  return ((curr - prev) / prev) * 100;
+}
+function deltaHtml(curr, prev, suffix=''){
+  const d = pctDelta(curr, prev);
+  if(d === null) return '<div class="delta">—</div>';
+  const cls = d >= 0 ? 'up' : 'down';
+  const arrow = d >= 0 ? '▲' : '▼';
+  return `<div class="delta ${cls}">${arrow} ${Math.abs(d).toFixed(1)}% vs. forrige måned${suffix}</div>`;
+}
+
+/* =========================================================
+   RENDER: STATUS I DAG
+========================================================= */
+function renderStatus(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const visits = yd.visits.slice().sort((a,b)=> a.monthIndex - b.monthIndex);
+  const last = visits[visits.length-1];
+  const prev = visits[visits.length-2];
+
+  const currentMonthVisitors = last ? last.visitors : 0;
+  const visitsDown = (last && prev && last.visitors < prev.visitors);
+
+  const upcoming = yd.events
+    .filter(e => new Date(e.date) >= new Date(new Date().toDateString()))
+    .sort((a,b)=> new Date(a.date) - new Date(b.date));
+  const noUpcoming = upcoming.length === 0;
+
+  const activeVolunteers = yd.volunteers.length ? yd.volunteers[yd.volunteers.length-1].active : 0;
+
+  const today = new Date();
+  const in30 = new Date(); in30.setDate(in30.getDate()+30);
+  const in60 = new Date(); in60.setDate(in60.getDate()+60);
+
+  const sponsorsExpiringIn30 = DATA.sponsors.filter(s=> s.end && new Date(s.end) >= today && new Date(s.end) <= in30);
+  const sponsorsExpiringIn60 = DATA.sponsors.filter(s=> s.end && new Date(s.end) >= today && new Date(s.end) <= in60 && new Date(s.end) > in30);
+
+  // Frivillige timer denne måned (= seneste registrerede måned i indeværende år)
+  const thisMonthIndex = new Date().getMonth();
+  const thisMonthVol = yd.volunteers.find(v=>v.monthIndex===thisMonthIndex);
+  const hoursThisMonth = thisMonthVol ? (thisMonthVol.hours||0) : 0;
+  const noHoursThisMonth = !thisMonthVol || hoursThisMonth === 0;
+
+  // Seneste nyheder (top 3)
+  const recentNews = DATA.news.slice().sort((a,b)=> new Date(b.date)-new Date(a.date)).slice(0,3);
+
+  function statusCard(label, value, level, message){
+    const cls = level==='alert' ? 'status-alert' : level==='warn' ? 'status-warn' : 'status-ok';
+    const dot = level==='alert' ? 'alert' : level==='warn' ? 'warn' : 'ok';
+    return `
+      <div class="stat-card ${cls}">
+        <div class="label"><span class="status-dot ${dot}"></span>${label}</div>
+        <div class="value">${value}</div>
+        ${message ? `<div class="status-msg ${dot}">${message}</div>` : ''}
+      </div>
+    `;
+  }
+
+  let html = '';
+
+  // 1. Besøgstal denne måned
+  if(!last){
+    html += statusCard('Besøgstal denne måned', '–', 'warn', 'Ingen besøgsdata registreret endnu');
+  }else if(visitsDown){
+    html += statusCard('Besøgstal denne måned', fmtNum(currentMonthVisitors), 'warn', 'Færre besøgende end sidste måned');
+  }else{
+    html += statusCard('Besøgstal denne måned', fmtNum(currentMonthVisitors), 'ok', 'På niveau med eller højere end sidste måned');
+  }
+
+  // 2. Kommende arrangementer
+  if(noUpcoming){
+    html += statusCard('Kommende arrangementer', '0', 'warn', 'Ingen arrangementer planlagt – overvej at oprette nye');
+  }else{
+    html += statusCard('Kommende arrangementer', fmtNum(upcoming.length), 'ok', 'Planlagt og synligt for besøgende');
+  }
+
+  // 3. Aktive frivillige
+  html += statusCard('Aktive frivillige', fmtNum(activeVolunteers), activeVolunteers>0 ? 'ok' : 'warn', activeVolunteers>0 ? 'Frivillige registreret' : 'Ingen frivillige registreret');
+
+  // 4. Sponsorater der udløber snart
+  if(sponsorsExpiringIn30.length > 0){
+    html += statusCard('Sponsorater der udløber snart', fmtNum(sponsorsExpiringIn30.length), 'alert', 'Udløber inden 30 dage – kontakt sponsor');
+  }else if(sponsorsExpiringIn60.length > 0){
+    html += statusCard('Sponsorater der udløber snart', fmtNum(sponsorsExpiringIn60.length), 'warn', 'Udløber inden 60 dage – planlæg opfølgning');
+  }else{
+    html += statusCard('Sponsorater der udløber snart', '0', 'ok', 'Ingen udløber lige nu');
+  }
+
+  // 5. Seneste nyheder
+  html += statusCard('Seneste nyheder', fmtNum(DATA.news.length), 'ok', recentNews.length ? escapeHtml(recentNews[0].title) : 'Ingen nyheder tilføjet endnu');
+
+  // 6. Frivillige timer denne måned
+  if(noHoursThisMonth){
+    html += statusCard('Frivillige timer denne måned', '0', 'warn', 'Ingen timer registreret for denne måned');
+  }else{
+    html += statusCard('Frivillige timer denne måned', fmtNum(hoursThisMonth), 'ok', 'Registreret for denne måned');
+  }
+
+  document.getElementById('statusCards').innerHTML = html;
+
+  // Upcoming events table
+  const tbody = document.getElementById('upcomingEventsTable');
+  if(upcoming.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4" style="color:#888;">Ingen kommende arrangementer registreret for ${CURRENT_YEAR}.</td></tr>`;
+  }else{
+    tbody.innerHTML = upcoming.slice(0,8).map(e=>`
+      <tr>
+        <td>${formatDate(e.date)}</td>
+        <td>${escapeHtml(e.title)}</td>
+        <td>${escapeHtml(e.type)}</td>
+        <td>${fmtNum(e.expected || 0)} / ${fmtNum(e.actual || 0)}</td>
+      </tr>
+    `).join('');
+  }
+}
+
+function formatDate(d){
+  if(!d) return '–';
+  const dt = new Date(d);
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('da-DK', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+function escapeHtml(str){
+  if(str === undefined || str === null) return '';
+  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* =========================================================
+   RENDER: BESØGSSTATISTIK
+========================================================= */
+let visitorsChart, deviceChart, overviewVisitorsChart;
+
+function renderVisits(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const visits = yd.visits.slice().sort((a,b)=> a.monthIndex - b.monthIndex);
+
+  const totalVisitors = sumField(visits, 'visitors');
+  const totalPageviews = sumField(visits, 'pageviews');
+  const last = visits[visits.length-1];
+  const prev = visits[visits.length-2];
+
+  // Most visited page (most frequent across months, simplistic)
+  const pageCounts = {};
+  visits.forEach(v=>{ if(v.topPage){ pageCounts[v.topPage] = (pageCounts[v.topPage]||0)+1; } });
+  const topPage = Object.entries(pageCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  document.getElementById('visitCards').innerHTML = `
+    <div class="stat-card">
+      <div class="label">Besøgende (${CURRENT_YEAR})</div>
+      <div class="value">${fmtNum(totalVisitors)}</div>
+      ${last ? deltaHtml(last.visitors, prev ? prev.visitors : null) : ''}
+    </div>
+    <div class="stat-card">
+      <div class="label">Sidevisninger (${CURRENT_YEAR})</div>
+      <div class="value">${fmtNum(totalPageviews)}</div>
+      ${last ? deltaHtml(last.pageviews, prev ? prev.pageviews : null) : ''}
+    </div>
+    <div class="stat-card">
+      <div class="label">Mest besøgte side</div>
+      <div class="value" style="font-size:1.1rem;">${topPage ? escapeHtml(topPage[0]) : '–'}</div>
+      <div class="delta">Baseret på registrerede måneder</div>
+    </div>
+  `;
+
+  renderLineChart('visitorsChart', visits.map(v=>MONTHS[v.monthIndex]), [
+    { label: 'Besøgende', data: visits.map(v=>v.visitors), color: '#0b2438' },
+    { label: 'Sidevisninger', data: visits.map(v=>v.pageviews), color: '#a13d3d' }
+  ]);
+
+  // Device chart (last month)
+  if(deviceChart) deviceChart.destroy();
+  const ctx2 = document.getElementById('deviceChart');
+  if(last){
+    deviceChart = new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Mobil','iPad/Tablet','PC'],
+        datasets: [{
+          data: [last.mobile||0, last.tablet||0, last.desktop||0],
+          backgroundColor: ['#a13d3d','#e8dcc4','#0b2438']
+        }]
+      },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  // Table
+  const tbody = document.getElementById('visitTable');
+  tbody.innerHTML = visits.map((v,i)=>`
+    <tr>
+      <td>
+        <select onchange="updateVisit(${v.id},'monthIndex',this.value)">
+          ${MONTHS.map((m,mi)=>`<option value="${mi}" ${mi==v.monthIndex?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="number" value="${v.visitors||0}" onchange="updateVisit(${v.id},'visitors',this.value)"></td>
+      <td><input type="number" value="${v.pageviews||0}" onchange="updateVisit(${v.id},'pageviews',this.value)"></td>
+      <td><input type="number" value="${v.mobile||0}" onchange="updateVisit(${v.id},'mobile',this.value)"></td>
+      <td><input type="number" value="${v.tablet||0}" onchange="updateVisit(${v.id},'tablet',this.value)"></td>
+      <td><input type="number" value="${v.desktop||0}" onchange="updateVisit(${v.id},'desktop',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(v.topPage||'')}" onchange="updateVisit(${v.id},'topPage',this.value)" placeholder="/forside"></td>
+      <td><button class="btn btn-danger btn-small" onclick="removeRow('visits',${v.id})">Fjern</button></td>
+    </tr>
+  `).join('') || `<tr><td colspan="8" style="color:#888;">Ingen data endnu. Klik "+ Tilføj måned".</td></tr>`;
+}
+
+function addVisitRow(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const usedMonths = yd.visits.map(v=>v.monthIndex);
+  let nextMonth = 0;
+  for(let m=0;m<12;m++){ if(!usedMonths.includes(m)){ nextMonth = m; break; } }
+  yd.visits.push({ id: Date.now(), monthIndex: nextMonth, visitors:0, pageviews:0, mobile:0, tablet:0, desktop:0, topPage:'' });
+  saveData();
+  renderAll();
+}
+function updateVisit(id, field, value){
+  const yd = ensureYear(CURRENT_YEAR);
+  const row = yd.visits.find(v=>v.id===id);
+  if(!row) return;
+  row[field] = (field==='topPage' || field==='monthIndex') ? (field==='monthIndex'? Number(value) : value) : Number(value);
+  saveData();
+  renderAll();
+}
+
+/* =========================================================
+   RENDER: ARRANGEMENTER
+========================================================= */
+let eventTypeChart;
+
+function renderEvents(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const events = yd.events.slice().sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+  const totalEvents = events.length;
+  const totalParticipants = sumField(events, 'actual');
+
+  // Most popular type
+  const typeTotals = {};
+  events.forEach(e=>{ typeTotals[e.type] = (typeTotals[e.type]||0) + (Number(e.actual)||0); });
+  const topType = Object.entries(typeTotals).sort((a,b)=>b[1]-a[1])[0];
+
+  document.getElementById('eventCards').innerHTML = `
+    <div class="stat-card">
+      <div class="label">Arrangementer (${CURRENT_YEAR})</div>
+      <div class="value">${fmtNum(totalEvents)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Deltagere i alt</div>
+      <div class="value">${fmtNum(totalParticipants)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Mest populær aktivitet</div>
+      <div class="value" style="font-size:1.1rem;">${topType ? escapeHtml(topType[0]) : '–'}</div>
+      <div class="delta">${topType ? fmtNum(topType[1]) + ' deltagere' : ''}</div>
+    </div>
+  `;
+
+  // Chart: participants per type
+  if(eventTypeChart) eventTypeChart.destroy();
+  const ctx = document.getElementById('eventTypeChart');
+  const labels = EVENT_TYPES;
+  const dataVals = labels.map(t => typeTotals[t] || 0);
+  eventTypeChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Deltagere', data: dataVals, backgroundColor: '#0b2438' }]
+    },
+    options: { plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true } } }
+  });
+
+  document.querySelector('#tab-arrangementer h3').textContent !== undefined; // no-op
+  document.querySelectorAll('#tab-arrangementer .panel-box h3')[1].textContent = `Arrangementer i ${CURRENT_YEAR}`;
+
+  // Table
+  const tbody = document.getElementById('eventTable');
+  tbody.innerHTML = events.map(e=>`
+    <tr>
+      <td><input type="date" value="${e.date||''}" onchange="updateEvent(${e.id},'date',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(e.title||'')}" onchange="updateEvent(${e.id},'title',this.value)" placeholder="Titel"></td>
+      <td>
+        <select onchange="updateEvent(${e.id},'type',this.value)">
+          ${EVENT_TYPES.map(t=>`<option value="${t}" ${t===e.type?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="number" value="${e.actual||0}" onchange="updateEvent(${e.id},'actual',this.value)" placeholder="Deltagere"></td>
+      <td><button class="btn btn-danger btn-small" onclick="removeRow('events',${e.id})">Fjern</button></td>
+    </tr>
+  `).join('') || `<tr><td colspan="5" style="color:#888;">Ingen arrangementer endnu. Klik "+ Tilføj arrangement".</td></tr>`;
+}
+
+function addEventRow(){
+  const yd = ensureYear(CURRENT_YEAR);
+  yd.events.push({ id: Date.now(), date: `${CURRENT_YEAR}-01-01`, title:'', type: EVENT_TYPES[0], expected:0, actual:0 });
+  saveData();
+  renderAll();
+}
+function updateEvent(id, field, value){
+  const yd = ensureYear(CURRENT_YEAR);
+  const row = yd.events.find(e=>e.id===id);
+  if(!row) return;
+  row[field] = (field==='actual' || field==='expected') ? Number(value) : value;
+  saveData();
+  renderAll();
+}
+
+/* =========================================================
+   RENDER: FRIVILLIGE
+========================================================= */
+let volunteerHoursChart;
+
+function renderVolunteers(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const vols = yd.volunteers.slice().sort((a,b)=> a.monthIndex - b.monthIndex);
+
+  const totalHours = sumField(vols, 'hours');
+  const totalNew = sumField(vols, 'newVolunteers');
+  const totalActivities = sumField(vols, 'activities');
+  const last = vols[vols.length-1];
+
+  document.getElementById('volunteerCards').innerHTML = `
+    <div class="stat-card">
+      <div class="label">Aktive frivillige (seneste måned)</div>
+      <div class="value">${fmtNum(last ? last.active : 0)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Frivillige timer (${CURRENT_YEAR})</div>
+      <div class="value">${fmtNum(totalHours)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Gennemførte aktiviteter</div>
+      <div class="value">${fmtNum(totalActivities)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Nye frivillige (${CURRENT_YEAR})</div>
+      <div class="value">${fmtNum(totalNew)}</div>
+    </div>
+  `;
+
+  if(volunteerHoursChart) volunteerHoursChart.destroy();
+  const ctx = document.getElementById('volunteerHoursChart');
+  volunteerHoursChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: vols.map(v=>MONTHS[v.monthIndex]),
+      datasets: [{ label: 'Timer', data: vols.map(v=>v.hours), backgroundColor: '#a13d3d' }]
+    },
+    options: { plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true } } }
+  });
+
+  const tbody = document.getElementById('volunteerTable');
+  tbody.innerHTML = vols.map(v=>`
+    <tr>
+      <td>
+        <select onchange="updateVolunteer(${v.id},'monthIndex',this.value)">
+          ${MONTHS.map((m,mi)=>`<option value="${mi}" ${mi==v.monthIndex?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="number" value="${v.active||0}" onchange="updateVolunteer(${v.id},'active',this.value)"></td>
+      <td><input type="number" value="${v.hours||0}" onchange="updateVolunteer(${v.id},'hours',this.value)"></td>
+      <td><input type="number" value="${v.activities||0}" onchange="updateVolunteer(${v.id},'activities',this.value)"></td>
+      <td><input type="number" value="${v.newVolunteers||0}" onchange="updateVolunteer(${v.id},'newVolunteers',this.value)"></td>
+      <td><button class="btn btn-danger btn-small" onclick="removeRow('volunteers',${v.id})">Fjern</button></td>
+    </tr>
+  `).join('') || `<tr><td colspan="6" style="color:#888;">Ingen data endnu. Klik "+ Tilføj måned".</td></tr>`;
+}
+
+function addVolunteerRow(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const usedMonths = yd.volunteers.map(v=>v.monthIndex);
+  let nextMonth = 0;
+  for(let m=0;m<12;m++){ if(!usedMonths.includes(m)){ nextMonth = m; break; } }
+  yd.volunteers.push({ id: Date.now(), monthIndex: nextMonth, active:0, hours:0, activities:0, newVolunteers:0 });
+  saveData();
+  renderAll();
+}
+function updateVolunteer(id, field, value){
+  const yd = ensureYear(CURRENT_YEAR);
+  const row = yd.volunteers.find(v=>v.id===id);
+  if(!row) return;
+  row[field] = Number(value);
+  saveData();
+  renderAll();
+}
+
+/* =========================================================
+   RENDER: SPONSORER (global, ikke år-bundet)
+========================================================= */
+function renderSponsors(){
+  const today = new Date();
+  const in60days = new Date(); in60days.setDate(in60days.getDate()+60);
+
+  const active = DATA.sponsors.filter(s=> !s.end || new Date(s.end) >= today);
+  const expiringSoon = DATA.sponsors.filter(s=> s.end && new Date(s.end) >= today && new Date(s.end) <= in60days);
+
+  document.getElementById('sponsorCards').innerHTML = `
+    <div class="stat-card">
+      <div class="label">Aktive sponsorer/partnere</div>
+      <div class="value">${fmtNum(active.length)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Udløber inden for 60 dage</div>
+      <div class="value">${fmtNum(expiringSoon.length)}</div>
+      ${expiringSoon.length ? '<div class="delta down">Kræver opfølgning</div>' : ''}
+    </div>
+    <div class="stat-card">
+      <div class="label">Registreret i alt</div>
+      <div class="value">${fmtNum(DATA.sponsors.length)}</div>
+    </div>
+  `;
+
+  const tbody = document.getElementById('sponsorTable');
+  tbody.innerHTML = DATA.sponsors.map(s=>{
+    let status = 'Aktiv';
+    let statusClass = '';
+    if(s.end){
+      const end = new Date(s.end);
+      if(end < today){ status = 'Udløbet'; statusClass='expiry-warning'; }
+      else if(end <= in60days){ status = 'Udløber snart'; statusClass='expiry-warning'; }
+    }
+    return `
+    <tr>
+      <td><input type="text" value="${escapeHtml(s.name||'')}" onchange="updateSponsor(${s.id},'name',this.value)" placeholder="Navn"></td>
+      <td>
+        <select onchange="updateSponsor(${s.id},'type',this.value)">
+          <option value="Sponsor" ${s.type==='Sponsor'?'selected':''}>Sponsor</option>
+          <option value="Samarbejdspartner" ${s.type==='Samarbejdspartner'?'selected':''}>Samarbejdspartner</option>
+        </select>
+      </td>
+      <td><input type="text" value="${escapeHtml(s.contact||'')}" onchange="updateSponsor(${s.id},'contact',this.value)" placeholder="Kontaktperson"></td>
+      <td><input type="date" value="${s.start||''}" onchange="updateSponsor(${s.id},'start',this.value)"></td>
+      <td><input type="date" value="${s.end||''}" onchange="updateSponsor(${s.id},'end',this.value)"></td>
+      <td class="${statusClass}">${status}</td>
+      <td><button class="btn btn-danger btn-small" onclick="removeSponsor(${s.id})">Fjern</button></td>
+    </tr>
+  `;}).join('') || `<tr><td colspan="7" style="color:#888;">Ingen sponsorer registreret endnu.</td></tr>`;
+}
+
+function addSponsorRow(){
+  DATA.sponsors.push({ id: Date.now(), name:'', type:'Sponsor', contact:'', start:'', end:'' });
+  saveData();
+  renderAll();
+}
+function updateSponsor(id, field, value){
+  const row = DATA.sponsors.find(s=>s.id===id);
+  if(!row) return;
+  row[field] = value;
+  saveData();
+  renderAll();
+}
+function removeSponsor(id){
+  DATA.sponsors = DATA.sponsors.filter(s=>s.id!==id);
+  saveData();
+  renderAll();
+}
+
+/* =========================================================
+   RENDER: HISTORIK
+========================================================= */
+let historyChart;
+
+function renderHistory(){
+  const years = Object.keys(DATA.years).sort();
+  const totals = years.map(y=>{
+    const yd = DATA.years[y];
+    return {
+      year: y,
+      visitors: sumField(yd.visits, 'visitors'),
+      events: yd.events.length,
+      participants: sumField(yd.events, 'actual'),
+      volunteerHours: sumField(yd.volunteers, 'hours')
+    };
+  });
+
+  const today = new Date();
+  // active sponsors per year is approximate: count sponsors whose period overlaps that year
+  const sponsorsPerYear = years.map(y=>{
+    return DATA.sponsors.filter(s=>{
+      const start = s.start ? new Date(s.start) : null;
+      const end = s.end ? new Date(s.end) : null;
+      const yStart = new Date(`${y}-01-01`);
+      const yEnd = new Date(`${y}-12-31`);
+      if(start && start > yEnd) return false;
+      if(end && end < yStart) return false;
+      return true;
+    }).length;
+  });
+
+  if(historyChart) historyChart.destroy();
+  const ctx = document.getElementById('historyChart');
+  historyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'Besøgende', data: totals.map(t=>t.visitors), backgroundColor: '#0b2438' },
+        { label: 'Deltagere ved arrangementer', data: totals.map(t=>t.participants), backgroundColor: '#a13d3d' },
+        { label: 'Frivillige timer', data: totals.map(t=>t.volunteerHours), backgroundColor: '#e8dcc4' }
+      ]
+    },
+    options: { scales:{ y:{ beginAtZero:true } } }
+  });
+
+  const tbody = document.getElementById('historyTable');
+  tbody.innerHTML = totals.map((t,i)=>`
+    <tr>
+      <td><strong>${t.year}</strong></td>
+      <td>${fmtNum(t.visitors)}</td>
+      <td>${fmtNum(t.events)}</td>
+      <td>${fmtNum(t.participants)}</td>
+      <td>${fmtNum(t.volunteerHours)}</td>
+      <td>${fmtNum(sponsorsPerYear[i])}</td>
+    </tr>
+  `).join('');
+}
+
+/* =========================================================
+   RENDER: FONDSDOKUMENTATION
+========================================================= */
+function renderFundDocs(){
+  const yd = ensureYear(CURRENT_YEAR);
+  const totalVisitors = sumField(yd.visits, 'visitors');
+  const totalEvents = yd.events.length;
+  const totalParticipants = sumField(yd.events, 'actual');
+  const totalHours = sumField(yd.volunteers, 'hours');
+  const lastVol = yd.volunteers[yd.volunteers.length-1];
+  const newVolunteers = sumField(yd.volunteers, 'newVolunteers');
+  const today = new Date();
+  const activeSponsors = DATA.sponsors.filter(s=> !s.end || new Date(s.end) >= today);
+
+  document.getElementById('fundSummary').innerHTML = `
+    <h3>Resumé for ${CURRENT_YEAR}</h3>
+    <div class="card-grid">
+      <div class="stat-card"><div class="label">Besøgende</div><div class="value">${fmtNum(totalVisitors)}</div></div>
+      <div class="stat-card"><div class="label">Arrangementer</div><div class="value">${fmtNum(totalEvents)}</div></div>
+      <div class="stat-card"><div class="label">Deltagere</div><div class="value">${fmtNum(totalParticipants)}</div></div>
+      <div class="stat-card"><div class="label">Frivillige timer</div><div class="value">${fmtNum(totalHours)}</div></div>
+      <div class="stat-card"><div class="label">Nye frivillige</div><div class="value">${fmtNum(newVolunteers)}</div></div>
+      <div class="stat-card"><div class="label">Aktive sponsorer</div><div class="value">${fmtNum(activeSponsors.length)}</div></div>
+    </div>
+  `;
+
+  const sponsorList = activeSponsors.map(s=>`- ${s.name || 'Unavngiven'} (${s.type}${s.contact? ', kontakt: '+s.contact:''})`).join('\n') || '- Ingen aktive sponsorer registreret';
+
+  // Year-over-year development
+  const years = Object.keys(DATA.years).sort();
+  const devLines = years.map(y=>{
+    const yd2 = DATA.years[y];
+    const v = sumField(yd2.visits,'visitors');
+    const ev = yd2.events.length;
+    const pa = sumField(yd2.events,'actual');
+    const hrs = sumField(yd2.volunteers,'hours');
+    return `${y}: ${fmtNum(v)} besøgende, ${fmtNum(ev)} arrangementer, ${fmtNum(pa)} deltagere, ${fmtNum(hrs)} frivillige timer`;
+  }).join('\n');
+
+  const text = `AARHUS SØFARTSMUSEUM – FONDSDOKUMENTATION ${CURRENT_YEAR}
+
+BESØGENDE
+I ${CURRENT_YEAR} har Aarhus Søfartsmuseum haft i alt ${fmtNum(totalVisitors)} besøgende på hjemmesiden, fordelt på ${fmtNum(sumField(yd.visits,'pageviews'))} sidevisninger.
+
+ARRANGEMENTER
+Museet har afholdt ${fmtNum(totalEvents)} arrangementer (foredrag, rundvisninger, udstillinger og maritime arrangementer) med i alt ${fmtNum(totalParticipants)} deltagere.
+
+FRIVILLIGE
+Museet er drevet af frivillige kræfter. I ${CURRENT_YEAR} er der registreret ${fmtNum(totalHours)} frivillige timer${lastVol ? ` og ${fmtNum(lastVol.active)} aktive frivillige` : ''}, samt ${fmtNum(newVolunteers)} nye frivillige.
+
+SPONSORER OG SAMARBEJDSPARTNERE
+Museet samarbejder med følgende aktive sponsorer og partnere:
+${sponsorList}
+
+UDVIKLING ÅR FOR ÅR
+${devLines}
+
+Denne dokumentation kan anvendes som grundlag for fondsansøgninger og årsberetninger, og viser museets aktivitetsniveau og samfundsmæssige betydning i ${CURRENT_YEAR}.`;
+
+  document.getElementById('fundText').value = text;
+}
+
+function copyFundText(){
+  const ta = document.getElementById('fundText');
+  ta.select();
+  document.execCommand('copy');
+  alert('Teksten er kopieret til udklipsholderen.');
+}
+function downloadFundText(){
+  const text = document.getElementById('fundText').value;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fondsdokumentation-${CURRENT_YEAR}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================
+   GENERIC ROW REMOVAL
+========================================================= */
+function removeRow(category, id){
+  const yd = ensureYear(CURRENT_YEAR);
+  yd[category] = yd[category].filter(r=>r.id!==id);
+  saveData();
+  renderAll();
+}
+
+/* =========================================================
+   CHART HELPER
+========================================================= */
+function renderLineChart(canvasId, labels, datasets){
+  const ctx = document.getElementById(canvasId);
+  if(window[canvasId+'_chart']) window[canvasId+'_chart'].destroy();
+  window[canvasId+'_chart'] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets: datasets.map(d=>({
+        label:d.label, data:d.data, borderColor:d.color,
+        backgroundColor:d.color+'22', tension:.3, fill:true
+      }))
+    },
+    options:{ scales:{ y:{ beginAtZero:true } } }
+  });
+}
+
+/* =========================================================
+   RENDER ALL
+========================================================= */
+function renderAll(){
+  renderStatus();
+  renderVisits();
+  renderEvents();
+  renderVolunteers();
+  renderSponsors();
+  renderHistory();
+  renderFundDocs();
+  renderDocuments();
+}
+
+/* =========================================================
+   DOKUMENTARKIV
+========================================================= */
+const DOC_CATEGORIES = ["Referat","Vedtægter","Fondsansøgning","Sponsorat","Årsrapport","Øvrigt"];
+
+function renderDocuments(){
+  const tbody = document.getElementById('docTable');
+  const docs = DATA.documents.slice().sort((a,b)=> new Date(b.date||0) - new Date(a.date||0));
+  tbody.innerHTML = docs.map(d=>`
+    <tr>
+      <td><input type="text" value="${escapeHtml(d.title||'')}" onchange="updateDoc(${d.id},'title',this.value)" placeholder="Titel"></td>
+      <td>
+        <select onchange="updateDoc(${d.id},'category',this.value)">
+          ${DOC_CATEGORIES.map(c=>`<option value="${c}" ${c===d.category?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="date" value="${d.date||''}" onchange="updateDoc(${d.id},'date',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(d.description||'')}" onchange="updateDoc(${d.id},'description',this.value)" placeholder="Kort beskrivelse"></td>
+      <td><input type="text" value="${escapeHtml(d.link||'')}" onchange="updateDoc(${d.id},'link',this.value)" placeholder="https://..."></td>
+      <td><input type="text" value="${escapeHtml(d.owner||'')}" onchange="updateDoc(${d.id},'owner',this.value)" placeholder="Ansvarlig"></td>
+      <td><button class="btn btn-danger btn-small" onclick="removeDoc(${d.id})">Fjern</button></td>
+    </tr>
+  `).join('') || `<tr><td colspan="7" style="color:#888;">Ingen dokumenter registreret endnu. Klik "+ Tilføj dokument".</td></tr>`;
+}
+
+function addDocRow(){
+  DATA.documents.push({ id: Date.now(), title:'', category: DOC_CATEGORIES[0], date:'', description:'', link:'', owner:'' });
+  saveData();
+  renderDocuments();
+}
+function updateDoc(id, field, value){
+  const row = DATA.documents.find(d=>d.id===id);
+  if(!row) return;
+  row[field] = value;
+  saveData();
+}
+function removeDoc(id){
+  DATA.documents = DATA.documents.filter(d=>d.id!==id);
+  saveData();
+  renderDocuments();
+}
+
+populateYearSelect();
+renderAll();
+</script>
+
+</body>
+</html>

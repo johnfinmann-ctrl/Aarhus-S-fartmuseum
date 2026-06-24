@@ -1,8 +1,14 @@
-# Aarhus Søfartsmuseum – Hjemmeside (Version 2.1)
+# Aarhus Søfartsmuseum – Hjemmeside (Version 2.2)
 
 Statisk hjemmeside til Aarhus Søfartsmuseum, bygget som en klassisk flersidet hjemmeside
 med separate sider for hvert emne. Navigationen sker via en gennemgående hamburger-menu
 (de tre streger), som fungerer ens på mobil, iPad og PC.
+
+Version 2.2 er en kvalitetssikrings- og indholdsopdatering: alle interne links er
+testet, udviklerplaceholder-tekster er fjernet, og flere sider (Museets historie,
+Samlingen, Historiske fotos, Arrangementer, Bogen, Bliv frivillig, Kontakt, Støt museet)
+er udbygget med mere realistisk museumsindhold. Footeren krediterer nu
+"Website developed by Nordic Operations" som klikbart link.
 
 Målgruppe: 60+, frivillige, museumsgæster, iPad- og PC-brugere. Designet er bevidst
 enkelt: korte sider, store knapper, tydelig navigation – ikke en lang scroll-side.

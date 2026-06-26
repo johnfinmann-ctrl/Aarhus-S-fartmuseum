@@ -1,139 +1,232 @@
-# Aarhus Søfartsmuseum – Hjemmeside (Version 2.2)
+# Aarhus Søfartsmuseum – Hjemmeside V3.0
 
-Statisk hjemmeside til Aarhus Søfartsmuseum, bygget som en klassisk flersidet hjemmeside
-med separate sider for hvert emne. Navigationen sker via en gennemgående hamburger-menu
-(de tre streger), som fungerer ens på mobil, iPad og PC.
-
-Version 2.2 er en kvalitetssikrings- og indholdsopdatering: alle interne links er
-testet, udviklerplaceholder-tekster er fjernet, og flere sider (Museets historie,
-Samlingen, Historiske fotos, Arrangementer, Bogen, Bliv frivillig, Kontakt, Støt museet)
-er udbygget med mere realistisk museumsindhold. Footeren krediterer nu
-"Website developed by Nordic Operations" som klikbart link.
-
-Målgruppe: 60+, frivillige, museumsgæster, iPad- og PC-brugere. Designet er bevidst
-enkelt: korte sider, store knapper, tydelig navigation – ikke en lang scroll-side.
-
-## Struktur
-
-```
-/index.html            - Forside (kort): hero + kort intro + "Aktuelt lige nu"
-/om.html                - Om museet: mission, vision, hvem er vi
-/historie.html          - Museets historie: tidslinje (2009, Bassin 7, Containermuseum, Pier 3, i dag)
-/samlingen.html         - Samlingen: temaer, genstande, lille billedgalleri
-/fotos.html             - Historiske fotos: ugens/månedens foto + temaer (havn, skibe, søfolk, containerhavn)
-/arrangementer.html     - Arrangementer: foredrag, rundvisninger, workshops, kommende datoer
-/nyheder.html           - Nyheder: seneste nyt fra museet
-/bog.html               - Bogen: "Man skulle have fanden til oldemor" – historie, pris, bestilling
-/frivillig.html         - Bliv frivillig: opgaver, billeder, tilmeldingsformular
-/stoet.html             - Støt museet: donation, sponsorat, medlemskab, bog, frivillig + CTA
-/sponsorer.html         - Sponsorer: nuværende/fremtidige sponsorer og samarbejde
-/fremtid.html           - Fremtidens museum: status, vision/strategi, udviklingsprojekter, links & samarbejdspartnere
-/aabningstider.html     - Åbningstider: redigerbart åbningstidsfelt + adresse/Maps
-/kontakt.html           - Kontakt: kontaktoplysninger + formular
-/admin/index.html       - Adminpanel (Decap CMS)
-/admin/config.yml       - Opsætning af adminpanel og indholdstyper
-/content/               - CMS-data (settings, gallery, events, news, collection, pages)
-/dashboard/index.html   - Bestyrelsesportal (kun via diskret footer-link "Bestyrelse")
-/assets/                - Billeder og medier (uploads fra Decap CMS gemmes i assets/uploads)
-```
-
-## Navigation
-
-Hamburger-menuen (de tre streger) er hovednavigationen på alle skærmstørrelser –
-mobil, iPad og PC. Menuen er grupperet i fire afsnit for overskuelighed:
-
-- Museet: Forside, Om museet, Museets historie, Fremtidens museum
-- Oplev: Samlingen, Historiske fotos, Arrangementer, Nyheder, Bogen
-- Vær med: Bliv frivillig, Støt museet, Sponsorer
-- Praktisk: Åbningstider, Kontakt
-
-Den aktive side er markeret i menuen. På PC/iPad åbner menuen som et bredt panel i
-4 kolonner (én pr. gruppe); på mobil vises grupperne i en lodret liste.
-
-## Forside
-
-Forsiden er bevidst kort:
-- Hero med logo/ikon, "Aarhus Søfartsmuseum", "Vi bevarer Aarhus' maritime historie" og
-  tre knapper (Besøg museet, Arrangementer, Støt museet)
-- Kort introduktion + "Læs mere om museet"
-- "Aktuelt lige nu": tre kort med seneste nyhed, næste arrangement og ugens foto, hver
-  med link til den fulde side (Nyheder, Arrangementer, Historiske fotos)
-
-## Footer (på alle sider)
-
-- Aarhus Søfartsmuseum, adresse (Hveensgade 3, 8000 Aarhus C), telefon, e-mail, CVR 43429329
-- Genveje til de vigtigste sider
-- Google Maps-link og link til Åbningstider
-- Facebook
-- Diskrete links: Admin (/admin/) og Bestyrelse (/dashboard/)
-
-## Bemærkninger til videre arbejde
-
-- Eksterne links på Fremtidens museum (Maritime partnere, Museer, Organisationer,
-  Maritime netværk) er sat ind som eksempler/placeholders og bør gennemgås og opdateres
-  med museets faktiske samarbejdspartnere og kontrolleres for aktive links.
-- Sponsorer-siden er forberedt med struktur og kort, men afventer museets faktiske
-  sponsorliste.
-- Nyheder og Arrangementer er pt. statisk indhold på siderne. De kan kobles til Decap
-  CMS' content/news/ og content/events/ for løbende redigering.
-- "Ugens foto" / "Månedens foto" på Historiske fotos og forsiden er pt. faste eksempler
-  og kan med fordel gøres redigerbare via CMS.
+Udviklet af **Nordic Operations** · [nordicoperations.dk](https://nordicoperations.dk)
 
 ---
 
-## 1. Sådan åbnes hjemmesiden
+## Hvad ejer kunden?
 
-Når siden ligger på GitHub Pages, er den tilgængelig på:
+Aarhus Søfartsmuseum ejer:
+- Al HTML, CSS og JavaScript i dette projekt
+- Alle tekster og indholdet på siderne
+- Bestyrelsesportalen og dens data
+- Domænet (skal registreres separat, f.eks. via Simply.com eller One.com)
+- GitHub-repoet (når det er oprettet på kundens konto)
+- QR-koderne i `assets/qr/`
+
+Nordic Operations ejer:
+- Retten til at bruge projektet som referenceprojekt
+- Kreditering i footeren ("Website developed by Nordic Operations")
+
+---
+
+## Filstruktur
 
 ```
-https://JOHN_GITHUB_BRUGERNAVN.github.io/REPO_NAVN/
+/
+├── index.html                  Forside
+├── om.html                     Om museet
+├── historie.html               Museets historie
+├── samlingen.html              Samlingen
+├── fotos.html                  Historiske fotos (med lysboks)
+├── arrangementer.html          Arrangementer
+├── nyheder.html                Nyheder
+├── bog.html                    Bogen
+├── frivillig.html              Bliv frivillig
+├── stoet.html                  Støt museet
+├── sponsorer.html              Sponsorer
+├── fremtid.html                Fremtidens museum
+├── aabningstider.html          Åbningstider
+├── kontakt.html                Kontakt
+├── privatlivspolitik.html      Privatlivspolitik (GDPR)
+├── cookiepolitik.html          Cookiepolitik
+├── offline.html                Offline fallback (PWA)
+├── manifest.json               PWA app-manifest
+├── service-worker.js           PWA service worker
+├── robots.txt                  Søgemaskineinstruktioner
+├── sitemap.xml                 Sitemap til Google/Bing
+├── chat-config.js              AI-chat konfiguration ← TILPAS DETTE
+├── admin/                      Decap CMS (Content Management)
+│   ├── index.html
+│   └── config.yml              ← Opdater repo-navn her
+├── dashboard/                  Bestyrelsesportal
+│   └── index.html
+├── content/                    CMS-data (markdown/JSON)
+├── assets/
+│   ├── icons/                  PWA app-ikoner (192 og 512px)
+│   ├── qr/                     QR-koder (PNG + HTML-oversigt)
+│   └── uploads/                Billeder uploadet via CMS
+└── README.md                   Denne fil
 ```
 
-Hjemmesiden virker som almindelig statisk HTML.
+---
 
-## 2. Sådan åbnes admin
+## Deployment til GitHub Pages
 
-Gå til:
+### Første gang
+1. Opret et GitHub-repo under museets eller Nordic Operations' konto
+2. Upload alle filer direkte til roden af `main`-branchen
+   - Brug GitHub-websitet (drag & drop) eller GitHub Desktop
+   - **Kritisk:** Alle `.html`-filer skal ligge i roden – IKKE i en undermappe
+3. Gå til repo → Settings → Pages → Source: `main` / `/ (root)`
+4. Siden er live på `https://BRUGERNAVN.github.io/REPO-NAVN/` efter 1-2 min
 
+### Opdater admin/config.yml
+Åbn `admin/config.yml` og erstat:
+```yaml
+backend:
+  name: github
+  repo: JOHN_GITHUB_BRUGERNAVN/REPO_NAVN   ← ret disse to
 ```
-https://JOHN_GITHUB_BRUGERNAVN.github.io/REPO_NAVN/admin/
+
+### Eget domæne (valgfrit)
+1. Opret en fil `CNAME` i roden med indholdet: `aarhus-sofartsmuseum.dk`
+2. Peg din DNS til GitHub Pages (A-records: 185.199.108.153 m.fl.)
+
+---
+
+## Opdatering af hjemmesiden
+
+### Via Decap CMS (anbefalet til redaktører)
+1. Gå til `https://DIN-URL/admin/`
+2. Log ind med GitHub-konto (kræver adgang til repoet)
+3. Opret nyheder, arrangementer eller rediger sider
+4. Klik "Publish" → ændringen gemmes automatisk i GitHub
+5. Siden er opdateret efter 1-2 minutter
+
+### Direkte redigering (til udviklere)
+1. Ret HTML-filerne direkte i GitHub-websitet eller i en editor
+2. Commit og push til `main`-branchen
+3. GitHub Pages genbygger automatisk
+
+### Cache-versionering (ved ny version)
+Når du laver en ny version, skal du opdatere `service-worker.js`:
+```javascript
+const CACHE_VERSION = 'asm-v3.1';  ← skift versionsnummer
+```
+Dette tvinger alle brugeres browsere til at hente den nye version.
+
+---
+
+## AI-chat konfiguration
+
+Åbn `chat-config.js` og udfyld:
+```javascript
+window.CHAT_CONFIG = {
+  apiKey: "sk-ant-...",  // ← Indsæt Anthropic API-nøgle her
+  ...
+};
+```
+Uden API-nøgle kører chatbotten automatisk i **FAQ-tilstand** – den virker stadig og besvarer de mest almindelige spørgsmål. Chatbotten er modulær og kan kopieres direkte til andre Nordic Operations-projekter.
+
+**Sikkerhed:** API-nøglen ligger kun i `chat-config.js` og bruges direkte fra brugerens browser. Anthropic-nøglen er synlig i kildekoden. Brug kun en nøgle med lav udgiftsgrænse til dette formål.
+
+---
+
+## QR-koder
+
+QR-koderne ligger i `assets/qr/`:
+- `qr-hjemmeside.png` – Forsiden
+- `qr-maps.png` – Google Maps
+- `qr-kontakt.png` – Kontaktsiden
+- `qr-arrangementer.png` – Arrangementer
+- `qr-stoet.png` – Støt museet
+- `qr-frivillig.png` – Bliv frivillig
+- `qr-chatbot.png` – AI-museumsguide
+- `qr-pwa-install.png` – Installér som app
+
+Åbn `assets/qr/qr-oversigt.html` i en browser og print (Ctrl+P) for en printvenlig oversigt med alle QR-koder.
+
+Når domænet skifter, skal QR-koderne regenereres med det nye domæne. Kontakt Nordic Operations.
+
+---
+
+## PWA – Installér som app
+
+Hjemmesiden kan installeres som app på iPhone, Android, iPad og PC:
+- **iPhone/iPad:** Safari → Del-knap → "Føj til hjemmeskærm"
+- **Android:** Chrome → Menu → "Installér app"
+- **PC (Chrome/Edge):** Adresselinjens installér-ikon
+
+Appen fungerer offline for de 15 kernesider. Nye opdateringer vises automatisk med en "Opdater nu"-knap.
+
+---
+
+## Linktest – sådan tester du
+
+1. Åbn `index.html` på GitHub Pages
+2. Klik systematisk igennem alle menupunkter og bekræft at siden indlæses
+3. Tjek at alle "kontakt os"-knapper åbner mail-klient korrekt
+4. Tjek at alle telefonnumre virker (ring/klik på mobil)
+5. Test chatbotten (skriv "åbningstider", "adresse", "bogen")
+6. Test kontaktformularen (send en testbesked)
+7. Test offline: sluk WiFi og genindlæs siden (skal vise offline-siden)
+
+**Automatisk linktest:** Projektet inkluderer en linktest i bygge-scriptet. Kør:
+```bash
+python3 /home/claude/v30_part3.py
 ```
 
-Eller klik på det lille "Admin"-link nederst i footeren på hjemmesiden.
+---
 
-Log ind med din GitHub-konto (kræver adgang til repoet). Decap CMS bruger GitHub som
-backend – se admin/config.yml.
+## Sikkerhed
 
-Vigtigt før første brug: udfyld backend.repo i admin/config.yml med jeres rigtige
-GitHub-brugernavn/repo, og sæt GitHub OAuth op (se Decap CMS' dokumentation).
+- Ingen API-nøgler er hardcoded i kildekoden
+- Ingen passwords er gemt i HTML, JS eller config-filer
+- Kontaktformularer gemmer ingen data på serveren (mailto-baserede)
+- Admin-panelet (Decap CMS) kræver GitHub OAuth – ingen password i koden
+- `robots.txt` blokerer søgemaskiner fra at indeksere `/admin/` og `/dashboard/`
+- CSP (Content Security Policy) anbefales tilføjet via GitHub Pages' `_headers`-fil
 
-## 3. Sådan redigeres arrangementer og nyheder
+---
 
-1. Gå til admin (/admin/)
-2. Vælg Arrangementer eller Nyheder i menuen til venstre
-3. Opret ny eller rediger eksisterende
-4. Udfyld titel, dato, beskrivelse og evt. billede
-5. Klik Publish (Publicér)
+## GDPR
 
-Bemærk: indholdet på arrangementer.html og nyheder.html er pt. skrevet direkte i HTML.
-For at CMS-redigeringer skal slå igennem på disse sider, skal siderne udvides til at
-hente data fra content/events/ og content/news/ (et naturligt næste skridt).
+- Privatlivspolitik: `privatlivspolitik.html`
+- Cookiepolitik: `cookiepolitik.html`
+- Ingen tracking-cookies eller analytics
+- localStorage bruges kun til åbningstider (teknisk nødvendig)
+- Kontaktformularen sender via mailto – ingen serverside datalagring
+- Chatbotten gemmer ingen persondata og beder aldrig om følsomme oplysninger
 
-## 4. Sådan uploades billeder
+---
 
-1. Klik på et billedfelt i admin og vælg Upload
-2. Billedet gemmes i assets/uploads/
-3. Billedet knyttes til det indhold, du redigerer
+## Lav ny version
 
-## 5. Sådan publiceres ændringer
+1. Opdater indhold i HTML-filerne eller via Decap CMS
+2. Bump version i `service-worker.js`: `CACHE_VERSION = 'asm-vX.X'`
+3. Opdater `sitemap.xml` hvis nye sider tilføjes
+4. Test alle links (se ovenfor)
+5. Commit og push til GitHub
+6. Bekræft at GitHub Pages bygger korrekt (grønt flueben under Actions)
+7. Udfyld statusrapporten (se nedenfor)
 
-- Publish i Decap CMS opretter automatisk en ændring (commit) i GitHub-repoet
-- GitHub Pages genbygger automatisk hjemmesiden efter 1-2 minutter
+---
 
-## Teknisk
+## Kontakt – Nordic Operations
 
-- Ren HTML, CSS og JavaScript – ingen frameworks, ingen WordPress, ingen database
-- Maritimt design (navy/sand/hvid/diskret rød), gennemgående hamburger-menu, store
-  knapper og touch-flader (egnet til ældre brugere)
-- Mobil-, tablet- og PC-optimeret
-- Bestyrelsesportal (/dashboard/) er uændret og adskilt fra den offentlige hjemmeside
+For support, opdateringer og nye versioner:
+- E-mail: J.Finmann@mail.dk
+- Hjemmeside: [nordicoperations.dk](https://nordicoperations.dk)
+
+---
+
+## Statusrapportskabelon (udfyldes ved hver version)
+
+| Kontrolpunkt     | Status | Bemærkning |
+|------------------|--------|------------|
+| Mobiltest        |        |            |
+| Tablettest       |        |            |
+| Desktoptest      |        |            |
+| PWA              |        |            |
+| Service Worker   |        |            |
+| Cache-opdatering |        |            |
+| Manifest         |        |            |
+| Admin            |        |            |
+| Mail             |        |            |
+| SMS              |        |            |
+| Telefon          |        |            |
+| QR-kode          |        |            |
+| GDPR             |        |            |
+| Sikkerhed        |        |            |
+| Overdragelse     |        |            |

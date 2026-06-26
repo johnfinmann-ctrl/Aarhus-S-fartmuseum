@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b2438">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Søfartsmuseum">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
 <title>Støt museet – Aarhus Søfartsmuseum</title>
   <meta name="description" content="Støt Aarhus Søfartsmuseum med donation, sponsorat, medlemskab eller frivilligarbejde.">
   <meta property="og:title" content="Støt museet – Aarhus Søfartsmuseum">
@@ -313,9 +319,19 @@
   .footer-bottom .dev-credit{margin-top:7px;font-size:.76rem;}
   .footer-bottom .dev-credit a{color:rgba(232,220,196,.65);text-decoration:underline;}
   .footer-bottom .dev-credit a:hover{color:var(--sand);}
+
+  /* SW update banner */
+  #sw-update-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:#1a3a52;color:#fff;padding:14px 20px;z-index:5000;font-family:'Trebuchet MS',sans-serif;font-size:.9rem;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  #sw-update-banner.show{display:flex;}
+  #sw-update-banner button{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:2px;cursor:pointer;font-family:inherit;font-weight:bold;font-size:.88rem;}
+
 </style>
 </head>
 <body>
+<div id="sw-update-banner" role="status" aria-live="polite">
+  <span>⚓ En ny version af hjemmesiden er klar.</span>
+  <button id="sw-update-btn">Opdater nu</button>
+</div>
 <a href="#main" class="skip-link">Gå til indhold</a>
 <header>
   <div class="nav-wrap">
@@ -406,7 +422,8 @@
         <a href="mailto:a.dam@suu.dk">a.dam@suu.dk</a></p>
       <ul style="margin-top:8px;">
         <li><a href="aabningstider.html">Åbningstider</a></li>
-        <li><a href="privatlivspolitik.html">Privatlivspolitik</a></li>
+        <li><a href="privatlivspolitik.html">Privatlivspolitik</a>
+        <li><a href="cookiepolitik.html">Cookiepolitik</a></li></li>
       </ul>
     </div>
   </div>
@@ -414,6 +431,7 @@
     <a href="/admin/">Admin</a><span class="divider">·</span>
     <a href="/dashboard/">Bestyrelse</a><span class="divider">·</span>
     <a href="privatlivspolitik.html">Privatlivspolitik</a>
+        <li><a href="cookiepolitik.html">Cookiepolitik</a></li>
   </div>
   <div class="footer-bottom">
     <div class="tagline">Aarhus Søfartsmuseum – Bevaring af Aarhus' maritime kulturarv</div>
@@ -498,6 +516,39 @@
     if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')doSend();});
     panel.querySelectorAll('.chat-faq button').forEach(b=>b.addEventListener('click',()=>{if(input)input.value=b.textContent;doSend();}));
   })();
+</script>
+<script>
+  // PWA: Service Worker registration
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => {
+          // Listen for new SW waiting
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+                document.getElementById('sw-update-banner').classList.add('show');
+              }
+            });
+          });
+        }).catch(err => console.log('SW registration failed:', err));
+      // Message from SW that it activated
+      navigator.serviceWorker.addEventListener('message', e => {
+        if(e.data && e.data.type === 'SW_UPDATED'){
+          document.getElementById('sw-update-banner').classList.add('show');
+        }
+      });
+    });
+  }
+  // Update banner button
+  const ubBtn = document.getElementById('sw-update-btn');
+  if(ubBtn) ubBtn.addEventListener('click', () => {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if(reg && reg.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'});}
+    });
+    window.location.reload();
+  });
 </script>
 </body>
 </html>

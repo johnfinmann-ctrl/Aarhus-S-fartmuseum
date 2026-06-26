@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR-koder – Aarhus Søfartsmuseum</title>
+<style>
+  :root{--navy:#0b2438;--sand:#e8dcc4;--sand-light:#f6f1e6;--red:#a13d3d;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Trebuchet MS','Segoe UI',sans-serif;background:var(--sand-light);color:var(--navy);padding:40px 20px;}
+  h1{text-align:center;font-size:2rem;color:var(--navy);margin-bottom:8px;}
+  .subtitle{text-align:center;color:#666;margin-bottom:40px;font-size:.95rem;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;max-width:1000px;margin:0 auto;}
+  .qr-card{background:#fff;border-radius:4px;padding:24px 20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.08);border-top:3px solid var(--navy);}
+  .qr-card img{width:160px;height:160px;margin:0 auto 14px;display:block;}
+  .qr-card h3{font-size:1rem;color:var(--navy);margin-bottom:6px;}
+  .qr-card p{font-size:.8rem;color:#666;word-break:break-all;}
+  .footer{text-align:center;margin-top:48px;font-size:.82rem;color:#888;}
+  .footer strong{color:var(--navy);}
+  @media print{
+    body{padding:20px;}
+    .grid{gap:16px;}
+    .qr-card{page-break-inside:avoid;box-shadow:none;border:1px solid #ddd;}
+  }
+</style>
+</head>
+<body>
+<h1>⚓ QR-koder</h1>
+<p class="subtitle">Aarhus Søfartsmuseum – scan for at gå direkte til den ønskede side</p>
+
+<div class="grid">
+  <div class="qr-card">
+    <img src="qr-hjemmeside.png" alt="QR-kode til hjemmesiden">
+    <h3>Hjemmeside</h3>
+    <p>aarhus-sofartsmuseum.dk</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-maps.png" alt="QR-kode til Google Maps">
+    <h3>Google Maps</h3>
+    <p>Hveensgade 3, 8000 Aarhus C</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-kontakt.png" alt="QR-kode til kontaktsiden">
+    <h3>Kontakt</h3>
+    <p>aarhus-sofartsmuseum.dk/kontakt.html</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-arrangementer.png" alt="QR-kode til arrangementer">
+    <h3>Arrangementer</h3>
+    <p>aarhus-sofartsmuseum.dk/arrangementer.html</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-stoet.png" alt="QR-kode til støt museet">
+    <h3>Støt museet</h3>
+    <p>aarhus-sofartsmuseum.dk/stoet.html</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-frivillig.png" alt="QR-kode til bliv frivillig">
+    <h3>Bliv frivillig</h3>
+    <p>aarhus-sofartsmuseum.dk/frivillig.html</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-chatbot.png" alt="QR-kode til AI-museumsguide">
+    <h3>AI Museumsguide</h3>
+    <p>Scan for at åbne chat-guiden</p>
+  </div>
+  <div class="qr-card">
+    <img src="qr-pwa-install.png" alt="QR-kode til app-installation">
+    <h3>Installér som app</h3>
+    <p>Tilføj til din startskærm</p>
+  </div>
+</div>
+
+<div class="footer">
+  <p><strong>Aarhus Søfartsmuseum</strong> · Hveensgade 3, 8000 Aarhus C · 60 64 18 16 · a.dam@suu.dk</p>
+  <p style="margin-top:6px;">Website developed by <strong>Nordic Operations</strong> · nordicoperations.dk</p>
+</div>
+</body>
+</html>
